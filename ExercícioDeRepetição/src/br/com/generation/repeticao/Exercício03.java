@@ -2,7 +2,7 @@ package br.com.generation.repeticao;
 
 import java.util.Scanner;
 
-public class Exercício03 {
+public class Exercicio03 {
 
 	public static void main(String[] args) {
 		
