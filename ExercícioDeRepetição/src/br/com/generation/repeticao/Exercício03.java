@@ -2,7 +2,7 @@ package br.com.generation.repeticao;
 
 import java.util.Scanner;
 
-public class Exercício03 {
+public class ExercÃ­cio03 {
 
 	public static void main(String[] args) {
 		
@@ -11,7 +11,7 @@ public class Exercício03 {
 		int idade = 0, menos21 = 0, mais50 = 0;
 		
 		while(idade != -99) {
-		System.out.println("Insira a idade. caso queira finalizar digite -99: ");
+		System.out.println("Insira a idade, caso queira finalizar digite -99: ");
 		idade = l.nextInt();
 			
 			if(idade < 21 && idade != -99) {
