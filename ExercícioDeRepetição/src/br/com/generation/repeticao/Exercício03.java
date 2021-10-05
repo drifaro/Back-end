@@ -16,7 +16,8 @@ public class Exercicio03 {
 			
 			if(idade < 21 && idade != -99) {
 				menos21++;
-			} else if (idade > 50) {
+			} 
+			if (idade > 50) {
 				mais50++;
 			}
 			
