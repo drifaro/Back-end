@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "tb_postagem")
 
-public class tabelasBlog {
+public class ModelBlog {
 	
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
