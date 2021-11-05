@@ -39,10 +39,14 @@ public class Produto {
 
 	@Range(min = 0)
 	private int estoque;
+	
+	@Range(min = 0)
+	private float preco;
 
 	@ManyToOne
 	@JsonIgnoreProperties ("produto")
 	private Categoria categoria;
+	
 
 	
 	public long getId_produto() {
@@ -84,6 +88,15 @@ public class Produto {
 	public void setEstoque(int estoque) {
 		this.estoque = estoque;
 	}
+	
+	public float getPreco() {
+		return preco;
+	}
+
+	public void setPreco(float preco) {
+		this.preco = preco;
+	}
+	
 	public Categoria getCategoria() {
 		return categoria;
 	}
