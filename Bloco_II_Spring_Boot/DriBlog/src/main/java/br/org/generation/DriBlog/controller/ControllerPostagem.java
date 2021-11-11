@@ -2,6 +2,8 @@ package br.org.generation.DriBlog.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,7 @@ import br.org.generation.DriBlog.model.ModelPostagem;
 import br.org.generation.DriBlog.repository.RepositoryPostagem;
 
 @RestController
-@RequestMapping("/postagem")
+@RequestMapping("/postagens")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 
 public class ControllerPostagem {
@@ -44,20 +46,28 @@ public class ControllerPostagem {
 	}
 
 	@PostMapping
-	public ResponseEntity<ModelPostagem> postPostagem(@RequestBody ModelPostagem tabBlog) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(repositoryPostagem.save(tabBlog));
+	public ResponseEntity<ModelPostagem> postPostagem(@Valid @RequestBody ModelPostagem postagem) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(repositoryPostagem.save(postagem));
 
 	}
 
 	@PutMapping
-	public ResponseEntity<ModelPostagem> putPostagem(@RequestBody ModelPostagem tabBlog) {
-		return ResponseEntity.status(HttpStatus.OK).body(repositoryPostagem.save(tabBlog));
+	public ResponseEntity<ModelPostagem> putPostagem(@Valid @RequestBody ModelPostagem postagem ) {
+		return repositoryPostagem.findById(postagem.getId())
+				.map(resp -> ResponseEntity.ok().body(repositoryPostagem.save(postagem)))
+				.orElse(ResponseEntity.notFound().build());
 
 	}
 
 	@DeleteMapping("/{id}")
-	public void deletePostagem(@PathVariable long id) {
-		repositoryPostagem.deleteById(id);
+	public ResponseEntity<?> deletePostagem(@PathVariable long id) {
+		
+		return repositoryPostagem.findById(id)
+				.map(resp -> {
+					repositoryPostagem.deleteById(id);
+					return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+				})
+				.orElse(ResponseEntity.notFound().build());
 	}
 
 }
