@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -31,10 +32,11 @@ public class Usuario {
 
 	@NotBlank
 	@Size(min = 2, max = 100)
+	@Email(message = "O formato do usuário é e-mail.")
 	private String usuario;
 
 	@NotBlank
-	@Size(min = 2, max = 100)
+	@Size(min=8)
 	private String senha;
 
 	@OneToMany (mappedBy = "usuario", cascade = CascadeType.REMOVE)

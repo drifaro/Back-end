@@ -15,38 +15,69 @@ import br.org.generation.DriBlog.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
+	private String criptografarSenha(String senha) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		return encoder.encode(senha);
+	}
+
+	private boolean compararSenhas(String senhaDigitada, String senhaBanco) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		return encoder.matches(senhaDigitada, senhaBanco);
+	}
+
+	private String gerarBasicToken(String email, String password) {
+		String tokenBase = email + ":" + password;
+		byte[] tokenBase64 = Base64.encodeBase64(tokenBase.getBytes(Charset.forName("US-ASCII")));
+		return "Basic " + new String(tokenBase64);
+	}
+
 	@Autowired
 	private UsuarioRepository repository;
 
-	public Usuario cadastrarUsuario(Usuario usuario) {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
 
-		String senhaEncoder = encoder.encode(usuario.getSenha());
-		usuario.setSenha(senhaEncoder);
+		if (repository.findByUsuario(usuario.getUsuario()).isPresent())
+			return Optional.empty();
 
-		return repository.save(usuario);
+		usuario.setSenha(criptografarSenha(usuario.getSenha()));
+		return Optional.of(repository.save(usuario));
 	}
 
-	public Optional<UserLogin> logar(Optional<UserLogin> user) {
-		
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		Optional<Usuario> usuario = repository.findByUsuario(user.get().getUsuario());
+	public Optional<Usuario> atualizarUsuario(Usuario usuario) {
+
+		if (repository.findById(usuario.getId()).isPresent()) {
+
+			Optional<Usuario> buscaUsuario = repository.findByUsuario(usuario.getUsuario());
+
+			if (buscaUsuario.isPresent()) {
+
+				if (buscaUsuario.get().getId() != usuario.getId())
+					return Optional.empty();
+			}
+			usuario.setSenha(criptografarSenha(usuario.getSenha()));
+			return Optional.of(repository.save(usuario));
+		}
+
+		return Optional.empty();
+	}
+
+	public Optional<UserLogin> autenticarUsuario(Optional<UserLogin> userLogin) {
+
+		Optional<Usuario> usuario = repository.findByUsuario(userLogin.get().getUsuario());
 
 		if (usuario.isPresent()) {
-			if (encoder.matches(user.get().getSenha(), usuario.get().getSenha())) {
+			if (compararSenhas(userLogin.get().getSenha(), usuario.get().getSenha())) {
 
-				String auth = user.get().getUsuario() + ":" + user.get().getSenha();
-				byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
-				String authHeader = "Basic " + new String(encodedAuth);
+				String token = gerarBasicToken(userLogin.get().getUsuario(), userLogin.get().getSenha());
+				userLogin.get().setId(usuario.get().getId());
+				userLogin.get().setNome(usuario.get().getNome());
+				userLogin.get().setSenha(usuario.get().getSenha());
+				userLogin.get().setToken(token);
 
-				user.get().setToken(authHeader);
-				user.get().setNome(usuario.get().getNome());
-
-				return user;
+				return userLogin;
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
-
 }
