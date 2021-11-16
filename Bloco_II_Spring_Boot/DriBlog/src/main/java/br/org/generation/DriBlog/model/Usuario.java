@@ -31,7 +31,6 @@ public class Usuario {
 	private String nome;
 
 	@NotBlank
-	@Size(min = 2, max = 100)
 	@Email(message = "O formato do usuário é e-mail.")
 	private String usuario;
 
